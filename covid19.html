@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Covid19 Update</title>
+
+	<!-- 	bootstrap css -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	
+	<!-- 	bootstrap js -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+	<!-- 	Angular CDN -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.9/angular.min.js"></script>
+	
+	<script type="text/javascript">
+		const URL="https://covid19.mathdro.id/api";
+		var app=angular.module("MyApp",[]);
+		app.controller("MyCtr",($scope,$http)=>{
+			//This is controller
+			$scope.title="Stay Home Stay Safe";
+
+			//Calling api
+			$http.get(URL).then((response)=>{
+				$scope.all_data=response.data;
+			},(error)=>{
+				console.log("Error");
+			});
+
+			$scope.get_country_data=()=>{
+				var countryValue=$scope.country;
+				$scope.showHide=countryValue;
+				if(countryValue==""){
+					$scope.showHide=undefined;
+					return;
+				}
+
+				$http.get(`${URL}/countries/${countryValue}`)
+				.then((response)=>{
+					$scope.country_data=response.data;
+// 					console.log($scope.country_data);
+				},(error)=>{
+					console.log("Error");
+				});
+			};
+			
+		});
+	</script>
+
+</head>
+<body ng-app="MyApp" ng-controller="MyCtr">
+	
+	<div class="container">
+		<div class="jumbotron py-3">
+		
+			<h1 class="text-center">{{title}}</h1>
+			<p class="pt-3">
+				Avoid close contact with people who are sick. Maintain at least three feet distance between yourself and anyone who is coughing or sneezing.
+				Avoid touching your eyes, nose, and mouth.
+				Stay home when you are sick.
+				Cover your cough or sneeze with a tissue, then dispose of the tissue safely.
+				Clean and disinfect frequently-touched objects and surfaces using a regular household cleaning spray or wipe.
+			</p>
+
+			<!-- All Data -->
+			<div class="row text-center">
+				<div class="col-md-4">
+					<div class="card bg-warning text-white">
+						<div class="card-body">
+							<h3>Confirmed Cases</h3>
+							<h3>{{all_data.confirmed.value}}</h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card bg-success text-white">
+						<div class="card-body">
+							<h3>Recovered Cases</h3>
+							<h3>{{all_data.recovered.value}}</h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card bg-danger text-white">
+						<div class="card-body">
+							<h3>Dead Cases</h3>
+							<h3>{{all_data.deaths.value}}</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End All Data -->
+			
+			<input 
+				type="text" 
+				class="form-control mt-4" 
+				ng-model="country"
+				ng-change="get_country_data()"
+			/>
+			
+			<!-- Country Data -->
+			<div class="container" ng-if="showHide">
+			
+			<h1 class="text-center mt-4 text-uppercase">{{country}} current status</h1>
+			<div class="row text-center mt-4" >
+				<div class="col-md-4">
+					<div class="card bg-warning text-white">
+						<div class="card-body">
+							<h3>Confirmed Cases</h3>
+							<h3>{{country_data.confirmed.value}}</h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card bg-success text-white">
+						<div class="card-body">
+							<h3>Recovered Cases</h3>
+							<h3>{{country_data.recovered.value}}</h3>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="card bg-danger text-white">
+						<div class="card-body">
+							<h3>Dead Cases</h3>
+							<h3>{{country_data.deaths.value}}</h3>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			</div>
+			<!-- End Country Data -->
+			
+		</div>
+	</div>
+	
+	
+</body>
+</html>
+
